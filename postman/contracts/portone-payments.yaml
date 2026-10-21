@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: PortOne Payments API (local simulation contract)
+  version: 1.0.0
+  description: Minimal contract for the payment lookup used by this application. Response shape follows the PortOne V2 payment lookup contract.
+servers:
+  - url: https://api.portone.io
+paths:
+  /payments/{paymentId}:
+    get:
+      operationId: getPayment
+      summary: Retrieve a payment
+      security:
+        - portoneSecret: []
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 6
+            maxLength: 64
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, status, currency, amount]
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [PAID]
+                  currency:
+                    type: string
+                    enum: [KRW]
+                  amount:
+                    type: object
+                    required: [total]
+                    properties:
+                      total:
+                        type: integer
+              examples:
+                paidCourse:
+                  value:
+                    id: course-42-0123456789abcdef0123456789abcdef
+                    status: PAID
+                    currency: KRW
+                    amount:
+                      total: 39000
+        '404':
+          description: Payment not found
+components:
+  securitySchemes:
+    portoneSecret:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: PortOne API secret authentication uses the Authorization header with the PortOne scheme.

@@ -1,0 +1,5 @@
+simulation: portone-course-payments
+routing: path
+mocks:
+  - routeKey: portone
+    path: ../mocks/portone/config.yaml
