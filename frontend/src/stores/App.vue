@@ -1,8 +1,8 @@
 <script setup>
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { computed, onMounted } from 'vue'
-import { StoreNavigation } from '../components'
-import { useAuth } from './stores/auth'
+import { StoreNavigation } from '../../components/index.js'
+import { useAuth } from './auth.js'
 
 const route = useRoute()
 const { user, restoring, restoreError, logoutBusy, logoutError, restoreSession, logout } = useAuth()

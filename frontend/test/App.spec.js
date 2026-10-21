@@ -1,6 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import App from '../src/App.vue'
+import App from '../src/stores/App.vue'
 import { api } from '../src/lib/api'
 import { useAuth } from '../src/stores/auth'
 jest.mock('../src/lib/api', () => ({ api: jest.fn() }))

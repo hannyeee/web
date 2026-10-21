@@ -14,7 +14,7 @@ The existing local email/password login remains available. Successful local or K
 - `app/main.py` creates tables with `Base.metadata.create_all`, which does not migrate existing SQLite columns.
 - Vite proxies `/api` to `http://127.0.0.1:8000`.
 - Kakao Developers app `1614700` (`mlops`) currently reports Kakao Login and consent items as not configured.
-- There are unrelated existing workspace changes in `frontend/src/App.vue`, `frontend/src/views/BoardListView.vue`, `frontend/dist/`, and `frontend/public/`. They are outside this feature.
+- There are unrelated existing workspace changes in `../../../frontend/src/stores/App.vue`, `frontend/src/views/BoardListView.vue`, `frontend/dist/`, and `frontend/public/`. They are outside this feature.
 
 ## Authentication flow
 

@@ -34,7 +34,7 @@
 - Modify: `frontend/package.json`
 - Modify: `frontend/package-lock.json`
 - Modify: `frontend/src/router.js`
-- Modify: `frontend/src/App.vue`
+- Modify: `../../../frontend/src/stores/App.vue`
 - Modify: `frontend/src/style.css`
 - Test: `frontend/test/App.spec.js`
 - Test: `frontend/test/api.spec.js`
