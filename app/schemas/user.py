@@ -17,4 +17,6 @@ class LoginReq(BaseModel):
     password: str
 
 class LoginRes(BaseModel):
+    idx: int
     email: str
+    name: str

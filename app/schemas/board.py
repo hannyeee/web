@@ -4,6 +4,7 @@ class ReadRes(BaseModel):
     idx: int
     title: str
     contents: str
+    created_by: int | None = None
 
 
 class ListRes(BaseModel):
@@ -18,3 +19,8 @@ class RegisterRes(BaseModel):
     idx: int
     title: str
     contents: str
+    created_by: int | None = None
+
+
+class DeleteRes(BaseModel):
+    idx: int

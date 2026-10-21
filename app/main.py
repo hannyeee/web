@@ -3,16 +3,25 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import board, course, order, user
 from app.db.database import Base, engine
-from app.db.migrations import migrate_course_orders
+from app.core.config import settings
+from app.db.migrations import migrate_course_orders, migrate_board_ownership
 from app.models.board import Board
 from app.models.user import User
 from app.models.course import Course
 from app.models.course_order import CourseOrder
 
 app = FastAPI(title="노트 API", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
@@ -45,5 +54,6 @@ app.include_router(order.router)
 
 Base.metadata.create_all(bind=engine)
 migrate_course_orders(engine)
+migrate_board_ownership(engine)
 
 # app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const client = axios.create({ baseURL: '/api', withCredentials: true, headers: { 'Content-Type': 'application/json' } })
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+})
 
 export async function api(path, options = {}) {
   const { method = 'GET', body, headers, ...config } = options

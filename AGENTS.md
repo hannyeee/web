@@ -8,6 +8,7 @@ DB는 SQLlite로 app.db 파일로 관리
 프론트엔드는 jest로 테스트할 수 있는 테스트 코드 작성 후 전체 통과되면 완료
 ## Session continuation
 Read `.agents/kakao-login-progress.md` before continuing Kakao login work.
+Read `docs/server-deployment-context.md` before working on deployment, production domains, or authentication cookies. Never store SSH passwords in repository files.
 
 ## Persistent specialist agents
 Subagent instances may be session-scoped. At the start of every new session, create the relevant specialist again using the repository role template below; pass its `developer_instructions` explicitly.

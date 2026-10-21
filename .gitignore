@@ -15,4 +15,3 @@ __pycache__/
 .env.*
 !.env.example
 .env
-.env.example

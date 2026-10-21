@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from app.schemas.user import LoginReq, LoginRes, SignUpReq, SignUpRes
 from app.schemas.common import ApiResponse
 from app.core.security import createToken
-from app.db.database import SessionLocal
+from app.core.config import settings
+from app.core.auth import get_current_user
 from app.models.user import User
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -29,8 +30,7 @@ def signup(req: SignUpReq, db: Session = Depends(get_db)):
     return {"code": 201, "message": "success", "result": {"email": req.email, "name": req.name}}
 
 @router.post("/login", response_model=ApiResponse[LoginRes])
-def login(req: LoginReq, res: Response):
-    db = SessionLocal()
+def login(req: LoginReq, res: Response, db: Session = Depends(get_db)):
     # 회원 가입이 되어있는지 아닌지 확인
     user = db.scalar(select(User).where(User.email == req.email))
     if user:
@@ -39,7 +39,9 @@ def login(req: LoginReq, res: Response):
                 "EN_AT",
                 createToken(req.email),
                 httponly=True,
-                secure=False,
+                secure=settings.COOKIE_SECURE,
+                domain=settings.COOKIE_DOMAIN,
+                path="/",
                 samesite="lax"
             )
             print("Login Successful")
@@ -47,3 +49,20 @@ def login(req: LoginReq, res: Response):
     print("Login Failed")
 
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
+
+
+@router.get("/me", response_model=ApiResponse[LoginRes])
+def me(user: User = Depends(get_current_user)):
+    return {"code": 200, "message": "success", "result": user}
+
+
+@router.post("/logout", response_model=ApiResponse[None])
+def logout(res: Response):
+    # Match the original cookie scope, and clear an older host-only API cookie.
+    domains = [settings.COOKIE_DOMAIN] if settings.COOKIE_DOMAIN is None else [settings.COOKIE_DOMAIN, None]
+    for domain in domains:
+        res.delete_cookie(
+            "EN_AT", domain=domain, path="/", secure=settings.COOKIE_SECURE,
+            httponly=True, samesite="lax",
+        )
+    return {"code": 200, "message": "success", "result": None}

@@ -1,16 +1,17 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, toRefs } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { api } from '../lib/api'
+import { boardDraft } from '../stores/boardDraft'
 
 const router = useRouter()
-const title = ref('')
-const contents = ref('')
+const { title, contents } = toRefs(boardDraft)
 const busy = ref(false)
 const error = ref('')
 const titleInput = ref(null)
 
 async function publish() {
+  if (busy.value) return
   if (!title.value.trim() || !contents.value.trim()) {
     error.value = '제목과 내용을 모두 입력해 주세요.'
     titleInput.value?.focus()
@@ -20,8 +21,13 @@ async function publish() {
   error.value = ''
   try {
     const post = await api('/board/register', { method: 'POST', body: JSON.stringify({ title: title.value.trim(), contents: contents.value.trim() }) })
+    title.value = ''
+    contents.value = ''
     await router.push(`/board/${post.idx}`)
-  } catch (err) { error.value = err.message }
+  } catch (err) {
+    if (err.status === 401) await router.push({ path: '/login', query: { returnTo: '/board/new' } })
+    else error.value = err.message
+  }
   finally { busy.value = false }
 }
 </script>

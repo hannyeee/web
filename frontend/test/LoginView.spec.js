@@ -6,9 +6,10 @@ let mockQuery = {}
 jest.mock('vue-router', () => ({ RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' }, useRoute: () => ({ query: mockQuery }), useRouter: () => ({ push: mockPush }) }))
 import { api } from '../src/lib/api'
 import StoreAccountPanel from '../components/StoreAccountPanel.vue'
+import { useAuth } from '../src/stores/auth'
 
 describe('login return destination', () => {
-  beforeEach(() => { api.mockReset(); mockPush.mockReset(); mockQuery = {} })
+  beforeEach(() => { api.mockReset(); mockPush.mockReset(); mockQuery = {}; useAuth().setUser(null) })
   async function submitLogin() {
     const wrapper = mount(LoginView)
     await wrapper.get('#login-email').setValue('reader@example.com')
@@ -22,6 +23,16 @@ describe('login return destination', () => {
     api.mockResolvedValue({})
     await submitLogin()
     expect(mockPush).toHaveBeenCalledWith('/courses/8?from=order')
+  })
+  it('updates the shared account before navigating after login', async () => {
+    const profile = { idx: 7, email: 'reader@example.com', name: '배움이' }
+    api.mockResolvedValue(profile)
+    mockPush.mockImplementation(() => {
+      expect(useAuth().user.value).toEqual(profile)
+    })
+    await submitLogin()
+    expect(mockPush).toHaveBeenCalledWith('/courses')
+    expect(useAuth().user.value).toEqual(profile)
   })
   it.each(['//attacker.example/path', 'https://attacker.example/path', '/\\attacker.example/path', ['/courses/8']])('falls back to the catalog for unsafe returnTo %s', async returnTo => {
     mockQuery = { returnTo }

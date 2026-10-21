@@ -2,11 +2,13 @@
 import { ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
+import { useAuth } from '../stores/auth'
 import StoreAccountPanel from '../../components/StoreAccountPanel.vue'
 import StoreFormField from '../../components/StoreFormField.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { setUser } = useAuth()
 const email = ref('')
 const password = ref('')
 const busy = ref(false)
@@ -17,7 +19,8 @@ async function login() {
   busy.value = true
   error.value = ''
   try {
-    await api('/user/login', { method: 'POST', body: JSON.stringify({ email: email.value, password: password.value }) })
+    const profile = await api('/user/login', { method: 'POST', body: JSON.stringify({ email: email.value, password: password.value }) })
+    setUser(profile)
     await router.push(typeof route.query.returnTo === 'string' && route.query.returnTo.startsWith('/') && !route.query.returnTo.startsWith('//') && !route.query.returnTo.includes('\\') ? route.query.returnTo : '/courses')
   } catch (err) { error.value = err.message }
   finally { busy.value = false }
